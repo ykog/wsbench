@@ -1,6 +1,8 @@
 
 
 var express = require('express');
+var http = require('http') ;
+var io = require('socket.io') ;
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -65,6 +67,22 @@ app.use(function(err, req, res, next) {
         error: {},
         title: 'error'
     });
+});
+
+// WebSocket
+var server = http.Server(app) ;
+var socket = io.listen(server) ;
+socket.on('connection', function(client) {
+    console.debug('connection') ;
+  // connect
+  client.on('message', function(message) {
+      console.debug('message') ;
+    // message
+  });
+  client.on('disconnect', function() {
+      console.debug('disconnect') ;
+    // disconnect
+  });
 });
 
 
