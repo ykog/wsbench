@@ -70,20 +70,22 @@ app.use(function(err, req, res, next) {
 });
 
 // WebSocket
-var server = http.Server(app) ;
-var socket = io.listen(server) ;
-socket.on('connection', function(client) {
-    console.debug('connection') ;
-  // connect
-  client.on('message', function(message) {
-      console.debug('message') ;
-    // message
-  });
-  client.on('disconnect', function() {
-      console.debug('disconnect') ;
-    // disconnect
-  });
-});
+app.initWs = function(server) {
+    var socket = io.listen(server) ;
 
+    socket.on('connection', function(client) {
+        console.log('connection') ;
+      // connect
+      client.on('message', function(message) {
+          console.log('message:' + message) ;
+	  socket.emit('message','Receive:' + message) ;
+        // message
+      });
+      client.on('disconnect', function() {
+          console.log('disconnect') ;
+        // disconnect
+      });
+    });
+} ;
 
 module.exports = app;

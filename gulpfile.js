@@ -21,11 +21,6 @@ gulp.task('develop', function () {
   });
 });
 
-gulp.task('scripts',function() {
-    return gulp.src([])
-           .pipe(gulp.dest()) ;
-}) ;
-
 gulp.task('default', [
   'develop'
 ]);

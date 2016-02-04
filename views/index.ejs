@@ -3,4 +3,29 @@
   <h1><%-title %></h1>
   <p>Welcome to <%-title %></p>
 
+  <div>
+    <input id="m" autocomplete="off" /><button id="b">Send</button>
+  </div>
+  <div>
+    <textarea id="r" style="height:300px; width:400px">受信メッセージ</textarea>
+  </div>
+
+<script>
+  var socket = io();
+
+  $('#b').click(function(){
+    socket.emit('message',$('#m').val()) ;
+    $('#m').val('') ;
+    return false ;
+  }) ;
+
+  socket.on('message',function(msg){
+    console.debug('message:' + msg) ;
+    var r = $('#r').val() ;
+    $('#r').val(r + "\n" + msg) ;
+  }) ;
+
+</script>
+
+
 <% include footer %>
