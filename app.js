@@ -90,7 +90,7 @@ app.initWs = function(server) {
 	  pool.query('INSERT INTO message SET ?',{'usr': b[0], 'msg': b[1]},
 		     function(err,result){
 			 if (err) throw err ;
-			 console.log('inserted') ;
+			 console.log('inserted:' + result.insertId) ;
 			 socket.emit('message',b[0] + ':' +  b[1]) ;
 		     }) ;
         // message
