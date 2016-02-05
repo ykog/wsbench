@@ -8,7 +8,14 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var mysql = require('mysql') ;
+var pool = mysql.createPool({
+    host: 'localhost' ,
+    user: 'wsbench' ,
+    password: 'wsbench',
+    database: 'wsbench' ,
+    debug: true
+}) ;
 var routes = require('./routes/index');
 var users = require('./routes/user');
 
@@ -19,7 +26,6 @@ app.locals.ENV = env;
 app.locals.ENV_DEVELOPMENT = env == 'development';
 
 // view engine setup
-
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -77,10 +83,30 @@ app.initWs = function(server) {
         console.log('connection') ;
       // connect
       client.on('message', function(message) {
-          console.log('message:' + message) ;
-	  socket.emit('message','Receive:' + message) ;
+	  var b = message.split("\t") ;
+	  console.log(b) ;
+	  console.log('user:' + b[0]) ;
+          console.log('message:' + b[1]) ;
+	  pool.query('INSERT INTO message SET ?',{'usr': b[0], 'msg': b[1]},
+		     function(err,result){
+			 if (err) throw err ;
+			 console.log('inserted') ;
+			 socket.emit('message',b[0] + ':' +  b[1]) ;
+		     }) ;
         // message
       });
+      client.on('search', function(who) {
+	  pool.query('SELECT * FROM message WHERE usr = ?',[who],
+		     function(err,result) {
+			 if (err) throw err ;
+			 console.log('selected:',result) ;
+			 if (Array.isArray(result)) {
+			     result.forEach(function(row,index,arr){
+				               console.log('id= ' + row.id + ' usr= ' + row.usr + ' msg= ' + row.msg) ;
+			                    }) ;
+			 }
+		     }) ;
+      }) ;
       client.on('disconnect', function() {
           console.log('disconnect') ;
         // disconnect

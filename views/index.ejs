@@ -4,7 +4,7 @@
   <p>Welcome to <%-title %></p>
 
   <div>
-    <input id="m" autocomplete="off" /><button id="b">Send</button>
+    <input id="u" autocomplte="off">/<input id="m" autocomplete="off" /><button id="b">Send</button>&nbsp;<button id="s">Search</button>
   </div>
   <div>
     <textarea id="r" style="height:300px; width:400px">受信メッセージ</textarea>
@@ -14,8 +14,15 @@
   var socket = io();
 
   $('#b').click(function(){
-    socket.emit('message',$('#m').val()) ;
+    var body = $('#u').val() + "\t" + $('#m').val() ;
+    socket.emit('message',body) ;
     $('#m').val('') ;
+    return false ;
+  }) ;
+
+  $('#s').click(function(){
+    var who = $('#u').val() ;
+    socket.emit('search',who) ;
     return false ;
   }) ;
 
