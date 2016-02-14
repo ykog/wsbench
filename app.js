@@ -80,6 +80,10 @@ app.use(function(err, req, res, next) {
 app.initWs = function(server) {
     var socket = io.listen(server) ;
 
+    // グローバルな認証の例
+    // ただしこのコードは古いやりかたで socket.io 1.0 以降は
+    // expressと同様にミドルウェアを挿入する方式で認証する
+    /*
     socket
     .set('authorization',function(data,accept) {
 	console.log('authorization') ;
@@ -93,8 +97,22 @@ app.initWs = function(server) {
 	    accept(null,false) ;
 	}
     }) ;
+    */
 
     var nsp = socket.of('/ws') ;
+
+    // 認証のミドルウェア
+    nsp.use(function(socket,next) {
+	console.log('authorization:',socket.request.url) ;
+	var parsed = url.parse(socket.request.url,true) ;
+	var key = parsed.query.key ;
+	console.log(key) ;
+	if (key.indexOf('Chrome') >= 0) {
+	    next() ;
+	} else {
+	    next(new Error('Unacceptable brower')) ;
+	}
+    }) ;
 
     nsp.on('connection', function(client) {
         console.log('connection') ;
