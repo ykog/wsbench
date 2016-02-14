@@ -2,6 +2,7 @@
 
 var express = require('express');
 var http = require('http') ;
+var url = require('url') ;
 var io = require('socket.io') ;
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -79,8 +80,22 @@ app.use(function(err, req, res, next) {
 app.initWs = function(server) {
     var socket = io.listen(server) ;
 
+    socket.set('authorization',function(data,accept) {
+	console.log('authorization') ;
+	console.log(data.url) ;
+	var parsed = url.parse(data.url,true) ;
+	var key = parsed.query.key ;
+	console.log(key) ;
+	if (key.indexOf('Chrome') >= 0) {
+	    accept(null,true) ;
+	} else {
+	    accept(null,false) ;
+	}
+    }) ;
+
     socket.on('connection', function(client) {
         console.log('connection') ;
+	console.log(client.handshake.query) ;
       // connect
       client.on('message', function(message) {
 	  var b = message.split("\t") ;
