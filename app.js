@@ -80,7 +80,8 @@ app.use(function(err, req, res, next) {
 app.initWs = function(server) {
     var socket = io.listen(server) ;
 
-    socket.set('authorization',function(data,accept) {
+    socket
+    .set('authorization',function(data,accept) {
 	console.log('authorization') ;
 	console.log(data.url) ;
 	var parsed = url.parse(data.url,true) ;
@@ -93,7 +94,9 @@ app.initWs = function(server) {
 	}
     }) ;
 
-    socket.on('connection', function(client) {
+    var nsp = socket.of('/ws') ;
+
+    nsp.on('connection', function(client) {
         console.log('connection') ;
 	console.log(client.handshake.query) ;
       // connect
@@ -106,7 +109,7 @@ app.initWs = function(server) {
 		     function(err,result){
 			 if (err) throw err ;
 			 console.log('inserted:' + result.insertId) ;
-			 socket.emit('message',b[0] + ':' +  b[1]) ;
+			 nsp.emit('message',b[0] + ':' +  b[1]) ;
 		     }) ;
         // message
       });

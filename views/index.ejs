@@ -11,7 +11,7 @@
   </div>
 
 <script>
-  var socket = io('/',{query: 'key=' + encodeURIComponent(navigator.appVersion)});
+  var socket = io('/ws',{query: 'key=' + encodeURIComponent(navigator.appVersion)});
 
   socket.on('disconnect',function(msg){
     console.debug('disconnect:' + msg) ;
